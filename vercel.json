@@ -1,5 +1,8 @@
 {
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
-  "installCommand": "echo skip"
+  "installCommand": "echo skip",
+  "env": {
+    "VITE_API_URL": "https://lab3-backend-k38t.onrender.com/api"
+  }
 }
