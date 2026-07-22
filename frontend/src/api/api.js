@@ -2,42 +2,54 @@ const BASE = import.meta.env.VITE_API_URL || 'https://lab3-backend-k38t.onrender
 
 const handleResponse = async (res) => {
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ message: 'Network error' }));
-    throw new Error(err.message || 'Request failed');
+    let message;
+    try {
+      const data = await res.json();
+      message = data.message || `Error ${res.status}`;
+    } catch {
+      message = `Error ${res.status} (${res.statusText || 'non-JSON response'})`;
+    }
+    throw new Error(message);
   }
   return res.json();
 };
 
-const json = (method, body) => ({
+const request = (url, options) =>
+  fetch(url, options)
+    .catch(() => { throw new Error(`Cannot reach server at ${url}`); })
+    .then(handleResponse);
+
+
+const j = (method, body) => ({
   method,
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(body),
 });
 
+// Users
+export const getUsers = () => request(`${BASE}/users`);
+export const getUser = (id) => request(`${BASE}/users/${id}`);
+export const createUser = (data) => request(`${BASE}/users`, j('POST', data));
+export const updateUser = (id, data) => request(`${BASE}/users/${id}`, j('PUT', data));
+export const deleteUser = (id) => request(`${BASE}/users/${id}`, { method: 'DELETE' });
 
-export const getUsers = () => fetch(`${BASE}/users`).then(handleResponse);
-export const getUser = (id) => fetch(`${BASE}/users/${id}`).then(handleResponse);
-export const createUser = (data) => fetch(`${BASE}/users`, json('POST', data)).then(handleResponse);
-export const updateUser = (id, data) => fetch(`${BASE}/users/${id}`, json('PUT', data)).then(handleResponse);
-export const deleteUser = (id) => fetch(`${BASE}/users/${id}`, { method: 'DELETE' }).then(handleResponse);
+// Projects
+export const getProjects = () => request(`${BASE}/projects`);
+export const getProject = (id) => request(`${BASE}/projects/${id}`);
+export const createProject = (data) => request(`${BASE}/projects`, j('POST', data));
+export const updateProject = (id, data) => request(`${BASE}/projects/${id}`, j('PUT', data));
+export const deleteProject = (id) => request(`${BASE}/projects/${id}`, { method: 'DELETE' });
 
+// Services
+export const getServices = () => request(`${BASE}/services`);
+export const getService = (id) => request(`${BASE}/services/${id}`);
+export const createService = (data) => request(`${BASE}/services`, j('POST', data));
+export const updateService = (id, data) => request(`${BASE}/services/${id}`, j('PUT', data));
+export const deleteService = (id) => request(`${BASE}/services/${id}`, { method: 'DELETE' });
 
-export const getProjects = () => fetch(`${BASE}/projects`).then(handleResponse);
-export const getProject = (id) => fetch(`${BASE}/projects/${id}`).then(handleResponse);
-export const createProject = (data) => fetch(`${BASE}/projects`, json('POST', data)).then(handleResponse);
-export const updateProject = (id, data) => fetch(`${BASE}/projects/${id}`, json('PUT', data)).then(handleResponse);
-export const deleteProject = (id) => fetch(`${BASE}/projects/${id}`, { method: 'DELETE' }).then(handleResponse);
-
-
-export const getServices = () => fetch(`${BASE}/services`).then(handleResponse);
-export const getService = (id) => fetch(`${BASE}/services/${id}`).then(handleResponse);
-export const createService = (data) => fetch(`${BASE}/services`, json('POST', data)).then(handleResponse);
-export const updateService = (id, data) => fetch(`${BASE}/services/${id}`, json('PUT', data)).then(handleResponse);
-export const deleteService = (id) => fetch(`${BASE}/services/${id}`, { method: 'DELETE' }).then(handleResponse);
-
-
-export const getReferences = () => fetch(`${BASE}/references`).then(handleResponse);
-export const getReference = (id) => fetch(`${BASE}/references/${id}`).then(handleResponse);
-export const createReference = (data) => fetch(`${BASE}/references`, json('POST', data)).then(handleResponse);
-export const updateReference = (id, data) => fetch(`${BASE}/references/${id}`, json('PUT', data)).then(handleResponse);
-export const deleteReference = (id) => fetch(`${BASE}/references/${id}`, { method: 'DELETE' }).then(handleResponse);
+// References
+export const getReferences = () => request(`${BASE}/references`);
+export const getReference = (id) => request(`${BASE}/references/${id}`);
+export const createReference = (data) => request(`${BASE}/references`, j('POST', data));
+export const updateReference = (id, data) => request(`${BASE}/references/${id}`, j('PUT', data));
+export const deleteReference = (id) => request(`${BASE}/references/${id}`, { method: 'DELETE' });
