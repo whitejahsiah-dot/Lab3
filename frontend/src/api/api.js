@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL || '/api';
+const BASE = import.meta.env.VITE_API_URL || 'https://lab3-backend-k38t.onrender.com/api';
 
 const handleResponse = async (res) => {
   if (!res.ok) {
