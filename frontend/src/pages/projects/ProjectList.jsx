@@ -1,11 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getProjects, deleteProject } from '../../api/api';
+
+const ProjectRow = memo(function ProjectRow({ project, onEdit, onDelete }) {
+  return (
+    <tr>
+      <td>{project.title}</td>
+      <td>{project.technologies || '—'}</td>
+      <td>{project.url ? <a href={project.url} target="_blank" rel="noreferrer">Link</a> : '—'}</td>
+      <td className="table-actions">
+        <button className="btn btn-secondary" onClick={() => onEdit(project.id)}>Edit</button>
+        <button className="btn btn-danger" onClick={() => onDelete(project.id)}>Delete</button>
+      </td>
+    </tr>
+  );
+});
 
 export default function ProjectList() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +40,11 @@ export default function ProjectList() {
     }
   };
 
+  const filtered = useMemo(
+    () => projects.filter((p) => p.title.toLowerCase().includes(search.toLowerCase())),
+    [projects, search]
+  );
+
   if (loading) return <div className="page"><p>Loading...</p></div>;
   if (error) return <div className="page"><p className="error">{error}</p></div>;
 
@@ -34,7 +54,15 @@ export default function ProjectList() {
         <h1>Projects</h1>
         <Link to="/admin/projects/new" className="btn btn-primary">+ Add Project</Link>
       </div>
-      {projects.length === 0 ? (
+      <div className="form-group" style={{ maxWidth: 320, marginBottom: '1rem' }}>
+        <input
+          type="search"
+          placeholder="Search projects…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+      {filtered.length === 0 ? (
         <p>No projects found.</p>
       ) : (
         <table className="data-table">
@@ -47,16 +75,13 @@ export default function ProjectList() {
             </tr>
           </thead>
           <tbody>
-            {projects.map((project) => (
-              <tr key={project.id}>
-                <td>{project.title}</td>
-                <td>{project.technologies || '—'}</td>
-                <td>{project.url ? <a href={project.url} target="_blank" rel="noreferrer">Link</a> : '—'}</td>
-                <td className="table-actions">
-                  <button className="btn btn-secondary" onClick={() => navigate(`/admin/projects/${project.id}/edit`)}>Edit</button>
-                  <button className="btn btn-danger" onClick={() => handleDelete(project.id)}>Delete</button>
-                </td>
-              </tr>
+            {filtered.map((project) => (
+              <ProjectRow
+                key={project.id}
+                project={project}
+                onEdit={(id) => navigate(`/admin/projects/${id}/edit`)}
+                onDelete={handleDelete}
+              />
             ))}
           </tbody>
         </table>

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database');
+const auth = require('../middleware/auth');
 
 router.get('/', (req, res) => {
   const services = db.get('services').value().slice().reverse();
@@ -13,7 +14,7 @@ router.get('/:id', (req, res) => {
   res.json(service);
 });
 
-router.post('/', (req, res) => {
+router.post('/', auth, (req, res) => {
   const { name, description, price } = req.body;
   if (!name) return res.status(400).json({ message: 'Name is required' });
   const service = { id: Date.now(), name, description: description || null, price: price || null, created_at: new Date().toISOString() };
@@ -21,7 +22,7 @@ router.post('/', (req, res) => {
   res.status(201).json(service);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', auth, (req, res) => {
   const { name, description, price } = req.body;
   if (!name) return res.status(400).json({ message: 'Name is required' });
   const existing = db.get('services').find({ id: Number(req.params.id) }).value();
@@ -31,7 +32,7 @@ router.put('/:id', (req, res) => {
   res.json(service);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', auth, (req, res) => {
   const existing = db.get('services').find({ id: Number(req.params.id) }).value();
   if (!existing) return res.status(404).json({ message: 'Service not found' });
   db.get('services').remove({ id: Number(req.params.id) }).write();

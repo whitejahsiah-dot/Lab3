@@ -292,3 +292,63 @@ main {
   border: 1px solid #f5c6cb;
   margin-bottom: 1rem;
 }
+
+/* Auth pages */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 3rem;
+}
+
+.auth-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-card h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.auth-form {
+  margin-top: 1.5rem;
+}
+
+.btn-full {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  font-size: 1rem;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1.2rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.auth-switch a {
+  color: #e94560;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Navbar user + sign out */
+.navbar-links {
+  align-items: center;
+}
+
+.navbar-user {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.btn-sm {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+}
