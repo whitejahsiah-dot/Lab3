@@ -1,9 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const bcrypt = require('bcryptjs');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
 
 const app = express();
 
@@ -16,22 +16,27 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(express.json());
 
-// Initialize database and seed admin user if needed
-const db = low(new FileSync('db.json'));
-db.defaults({ users: [], projects: [], services: [], references: [] }).read().write();
-const users = db.get('users').value();
-if (!users || users.length === 0) {
-  const adminHash = bcrypt.hashSync('admin123', 10);
-  db.get('users').push({
-    id: Date.now(),
-    name: 'Admin',
-    email: 'admin@portfolio.com',
-    password: adminHash,
-    role: 'admin',
-    bio: null,
-    created_at: new Date().toISOString()
-  }).write();
-  console.log('✅ Admin user seeded');
+// Seed admin user if db.json is empty or missing
+const dbPath = path.join(__dirname, 'db.json');
+if (!fs.existsSync(dbPath) || fs.readFileSync(dbPath, 'utf8').trim() === '') {
+  const seedData = {
+    users: [
+      {
+        id: Date.now(),
+        name: 'Admin',
+        email: 'admin@portfolio.com',
+        password: bcrypt.hashSync('admin123', 10),
+        role: 'admin',
+        bio: null,
+        created_at: new Date().toISOString()
+      }
+    ],
+    projects: [],
+    services: [],
+    references: []
+  };
+  fs.writeFileSync(dbPath, JSON.stringify(seedData, null, 2));
+  console.log('✅ Database seeded with admin user');
 }
 
 app.use('/api/auth', require('./routes/auth'));
