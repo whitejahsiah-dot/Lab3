@@ -3,6 +3,7 @@
   "outputDirectory": "frontend/dist",
   "installCommand": "echo skip",
   "env": {
-    "VITE_API_URL": "https://lab3-backend-k38t.onrender.com/api"
+    "VITE_API_URL": "@vite_api_url"
   }
 }
+
